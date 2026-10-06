@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Incidents · Hijra Operations{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">SERVICE DESK</div><h1>Incident Management</h1><p>Track reported issues from registration through resolution.</p></div><a class="btn primary" href="{% url 'incident_create' %}">＋ New incident</a></div>
+<section class="panel table-panel"><form class="filters" method="get"><input class="form-control search-input" name="q" value="{{ q }}" placeholder="Search incident, terminal or description…"><select class="form-control" name="status"><option value="">All statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="btn secondary">Filter</button><a class="text-link" href="{% url 'incident_list' %}">Reset</a></form>
+<div class="table-scroll"><table><thead><tr><th>Incident ID</th><th>Terminal / Branch</th><th>Problem</th><th>Priority</th><th>Reported</th><th>SLA</th><th>Status</th><th>Action</th></tr></thead><tbody>
+{% for item in incidents %}<tr><td><strong>{{ item.incident_id }}</strong></td><td>{{ item.atm.terminal_id }}<small class="cell-sub">{{ item.atm.branch.name }}</small></td><td>{{ item.get_problem_type_display }}<small class="cell-sub">{{ item.description|truncatechars:60 }}</small></td><td><span class="pill {{ item.priority|lower }}">{{ item.get_priority_display }}</span></td><td>{{ item.created_at|date:"d M Y, H:i" }}</td><td><span class="pill {% if item.sla_breached %}critical{% else %}online{% endif %}">{% if item.sla_breached %}Breached{% else %}{{ item.sla_hours }}h target{% endif %}</span></td><td><span class="pill {{ item.status|lower }}">{{ item.get_status_display }}</span></td><td><a class="icon-btn" href="{% url 'incident_edit' item.pk %}">✎</a></td></tr>
+{% empty %}<tr><td colspan="8" class="empty">No incidents found.</td></tr>{% endfor %}
+</tbody></table></div><div class="table-footer"><span>{{ incidents|length }} case(s)</span><a class="btn secondary" href="{% url 'incident_csv' %}">⇩ Export CSV</a></div></section>
+{% endblock %}

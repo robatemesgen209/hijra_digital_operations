@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Hijra Digital Operations{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'ops/css/app.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">H</span><span>HIJRA BANK<small>Digital Operations</small></span></a>
+    <nav>
+      <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">▦ <span>Dashboard</span></a>
+      <a href="{% url 'atm_list' %}" class="{% if 'atm' in request.resolver_match.url_name %}active{% endif %}">▣ <span>Digital Devices</span></a>
+      <a href="{% url 'incident_list' %}" class="{% if 'incident' in request.resolver_match.url_name %}active{% endif %}">◉ <span>Incident Management</span></a>
+      <a href="{% url 'sla_dashboard' %}" class="{% if request.resolver_match.url_name == 'sla_dashboard' %}active{% endif %}">◷ <span>SLA Monitoring</span></a>
+      <a href="{% url 'maintenance_list' %}" class="{% if 'maintenance' in request.resolver_match.url_name %}active{% endif %}">⚒ <span>Maintenance</span></a>
+      <a href="{% url 'incident_csv' %}">⇩ <span>Export Reports</span></a>
+      {% if user.is_staff %}<a href="/admin/">⚙ <span>Administration</span></a>{% endif %}
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-chip"><span class="avatar">{{ user.username|first|upper }}</span><span>{{ user.username }}<small>Operations user</small></span></div>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="logout" type="submit">↪ Log out</button></form>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="crumb">Hijra Bank <span>/</span> Digital Operations</div><div class="top-user"><span class="live-dot"></span>{{ user.username }}</div></header>
+    <section class="page-content">
+      {% if messages %}{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}{% endif %}
+      {% block content %}{% endblock %}
+      <footer>Hijra Bank Digital Operations Management System <span>Portfolio prototype · Demo data</span></footer>
+    </section>
+  </main>
+</div>
+{% else %}
+{% block auth_content %}{% endblock %}
+{% endif %}
+</body>
+</html>

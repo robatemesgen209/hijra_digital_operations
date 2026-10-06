@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Hijra Digital Operations{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">OVERVIEW</div><h1>Digital Operations Dashboard</h1><p>Monitor device availability, incidents and service performance.</p></div><a class="btn primary" href="{% url 'incident_create' %}">＋ New incident</a></div>
+<div class="stat-grid">
+  <div class="stat-card"><div class="stat-icon blue">▣</div><div><span>Total devices</span><strong>{{ total_atms }}</strong><small>Registered devices</small></div></div>
+  <div class="stat-card"><div class="stat-icon green">✓</div><div><span>Online</span><strong>{{ online_atms }}</strong><small>Operational devices</small></div></div>
+  <div class="stat-card"><div class="stat-icon red">!</div><div><span>Offline</span><strong>{{ offline_atms }}</strong><small>Require attention</small></div></div>
+  <div class="stat-card"><div class="stat-icon amber">◷</div><div><span>Open incidents</span><strong>{{ open_incidents }}</strong><small>{{ breached_incidents|length }} SLA breaches</small></div></div>
+</div>
+<div class="dashboard-grid">
+  <section class="panel chart-panel"><div class="panel-head"><div><h2>Device availability</h2><p>Current status distribution</p></div><a href="{% url 'atm_list' %}" class="text-link">View devices →</a></div><div class="chart-wrap"><canvas id="deviceChart"></canvas><div class="chart-legend">{% for item in status_data %}<span><i style="background:{{ item.color }}"></i>{{ item.label }} <b>{{ item.value }}</b></span>{% endfor %}</div></div></section>
+  <section class="panel"><div class="panel-head"><div><h2>Incident overview</h2><p>Current workload</p></div><a href="{% url 'incident_list' %}" class="text-link">View all →</a></div><div class="mini-metric"><span class="mini-icon amber">◷</span><div><strong>{{ open_incidents }}</strong><small>Open incidents</small></div></div><div class="mini-metric"><span class="mini-icon green">✓</span><div><strong>{{ resolved_incidents }}</strong><small>Resolved / closed</small></div></div><div class="mini-metric"><span class="mini-icon red">!</span><div><strong>{{ breached_incidents|length }}</strong><small>SLA at risk / breached</small></div></div><a class="btn secondary full" href="{% url 'sla_dashboard' %}">Review SLA performance</a></section>
+</div>
+<section class="panel table-panel"><div class="panel-head"><div><h2>Recent incidents</h2><p>Latest registered operational cases</p></div><a href="{% url 'incident_create' %}" class="btn secondary">＋ Register case</a></div>
+<div class="table-scroll"><table><thead><tr><th>Incident ID</th><th>Terminal / Branch</th><th>Problem</th><th>Priority</th><th>Reported</th><th>Status</th><th></th></tr></thead><tbody>
+{% for item in recent_incidents %}<tr><td><strong>{{ item.incident_id }}</strong></td><td>{{ item.atm.terminal_id }}<small class="cell-sub">{{ item.atm.branch.name }}</small></td><td>{{ item.get_problem_type_display }}</td><td><span class="pill {{ item.priority|lower }}">{{ item.get_priority_display }}</span></td><td>{{ item.created_at|date:"d M, H:i" }}</td><td><span class="pill {{ item.status|lower }}">{{ item.get_status_display }}</span></td><td><a class="icon-btn" href="{% url 'incident_edit' item.pk %}">↗</a></td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No incidents yet. Register your first incident.</td></tr>{% endfor %}
+</tbody></table></div></section>
+<script>
+const data = {{ status_data|safe }};
+new Chart(document.getElementById('deviceChart'), {type:'doughnut',data:{labels:data.map(x=>x.label),datasets:[{data:data.map(x=>x.value),backgroundColor:data.map(x=>x.color),borderWidth:0,hoverOffset:5}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:false}}}});
+</script>
+{% endblock %}

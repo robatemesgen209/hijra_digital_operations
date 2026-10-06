@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Maintenance · Hijra Operations{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">ASSET CARE</div><h1>Maintenance</h1><p>Schedule preventive work and track corrective maintenance.</p></div><a class="btn primary" href="{% url 'maintenance_create' %}">＋ Schedule maintenance</a></div>
+<section class="panel table-panel"><div class="table-scroll"><table><thead><tr><th>Job ID</th><th>Device</th><th>Type</th><th>Vendor</th><th>Scheduled date</th><th>Technician</th><th>Status</th></tr></thead><tbody>{% for job in jobs %}<tr><td><strong>{{ job.maintenance_id }}</strong></td><td>{{ job.atm.terminal_id }}<small class="cell-sub">{{ job.atm.branch.name }}</small></td><td>{{ job.get_maintenance_type_display }}</td><td>{{ job.vendor|default:"—" }}</td><td>{{ job.scheduled_date|date:"d M Y" }}</td><td>{{ job.technician|default:"—" }}</td><td><span class="pill {{ job.status|lower }}">{{ job.get_status_display }}</span></td></tr>{% empty %}<tr><td colspan="7" class="empty">No maintenance jobs scheduled.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

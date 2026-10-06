@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Digital Devices · Hijra Operations{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">DEVICE FLEET</div><h1>Digital Devices</h1><p>Monitor and maintain registered ATMs and cash recyclers.</p></div><a class="btn primary" href="{% url 'atm_create' %}">＋ Register device</a></div>
+<section class="panel table-panel"><form class="filters" method="get"><input class="form-control search-input" name="q" value="{{ q }}" placeholder="Search terminal, name or branch…"><select class="form-control" name="status"><option value="">All statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="btn secondary">Filter</button><a class="text-link" href="{% url 'atm_list' %}">Reset</a></form>
+<div class="table-scroll"><table><thead><tr><th>Terminal ID</th><th>Device</th><th>Branch / District</th><th>Type</th><th>Status</th><th>Cash level</th><th>Network</th><th>Action</th></tr></thead><tbody>
+{% for atm in atms %}<tr><td><strong>{{ atm.terminal_id }}</strong></td><td>{{ atm.name }}<small class="cell-sub">{{ atm.manufacturer|default:"Manufacturer not specified" }}</small></td><td>{{ atm.branch.name }}<small class="cell-sub">{{ atm.branch.district.name }}</small></td><td>{{ atm.get_device_type_display }}</td><td><span class="pill {{ atm.status|lower }}">{{ atm.get_status_display }}</span></td><td><div class="progress-line"><span style="width:{{ atm.cash_level }}%"></span></div><small>{{ atm.cash_level }}%</small></td><td><span class="pill {% if atm.network_status == 'ONLINE' %}online{% else %}offline{% endif %}">{{ atm.get_network_status_display }}</span></td><td><a class="icon-btn" href="{% url 'atm_edit' atm.pk %}">✎</a></td></tr>
+{% empty %}<tr><td colspan="8" class="empty">No devices found. Add a device or run the demo-data command.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}
