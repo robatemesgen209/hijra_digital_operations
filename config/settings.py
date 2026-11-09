@@ -14,6 +14,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "ops",
 ]
+ALLOWED_HOSTS = [
+    'hijra-digital-operations.vercel.app',
+    'localhost',
+    '127.0.0.1',
+]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
